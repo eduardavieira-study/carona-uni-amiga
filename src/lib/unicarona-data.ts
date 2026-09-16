@@ -3,7 +3,7 @@ export type RideStatus = "Pendente" | "Aprovada" | "Em andamento" | "Concluída"
 
 export type User = {
   id: string; name: string; email: string; password: string; university: string; phone: string;
-  bio: string; course: string; avatar: string; rating: number; completedRides: number;
+  bio: string; course: string; avatar: string; photo?: string; rating: number; completedRides: number;
   type: "motorista" | "passageira"; walletConfigured: boolean;
   vehicle?: { model: string; plate: string; color: string };
 };
@@ -78,7 +78,7 @@ export const initialState: UniCaronaState = {
     { id: "n1", userId: "bruno", text: "Camila solicitou uma vaga na sua carona.", read: false, time: "Há 18 min" },
     { id: "n2", userId: "camila", text: "Sua carona para a UFMG começa em breve.", read: false, time: "Há 32 min" },
   ],
-  currentUserId: "bruno", theme: "light", displayMode: "desktop",
+  currentUserId: "bruno", theme: "light", displayMode: "mobile",
 };
 
 export const STORAGE_KEY = "unicarona-prototype-v1";
