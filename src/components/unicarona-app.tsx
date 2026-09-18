@@ -210,13 +210,11 @@ export function UniCaronaApp() {
   </>;
 
   return <TooltipProvider>
-    {isDesktop ? <div className="min-h-screen bg-app text-foreground">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1440px]">
-        <DesktopSidebar menu={desktopMenu} view={view} setView={setView} current={current} isDriver={isDriver} />
-        <div className="flex min-h-screen flex-1 flex-col">
-          <DesktopTopbar view={view} unread={unread} onNotifications={openNotifications} />
-          <main className="flex-1 overflow-y-auto px-10 py-8"><div className="mx-auto w-full max-w-5xl">{content}</div></main>
-        </div>
+    {isDesktop ? <div className="flex min-h-screen w-full bg-app text-foreground">
+      <DesktopSidebar menu={desktopMenu} view={view} setView={setView} current={current} isDriver={isDriver} />
+      <div className="flex min-h-screen flex-1 flex-col">
+        <DesktopTopbar view={view} unread={unread} onNotifications={openNotifications} />
+        <main className="flex-1 overflow-y-auto px-10 py-8"><div className="mx-auto w-full max-w-5xl">{content}</div></main>
       </div>
     </div> : <div className="min-h-screen bg-app px-0 py-0 text-foreground sm:px-5 sm:py-6">
     <div className="phone-shell mx-auto flex min-h-[100dvh] w-full max-w-md flex-col overflow-hidden bg-surface shadow-device sm:min-h-[calc(100dvh-3rem)] sm:rounded-[2.5rem] sm:border sm:border-white/30">
@@ -321,7 +319,7 @@ function PublishView({ user, rides, requests, onWallet, onCreate, onEdit, onCanc
     return <article key={ride.id} className={`${glass} p-4`}><div className="flex justify-between"><div><b className="text-sm">{ride.origin}</b><p className="mt-1 text-xs text-muted-foreground">até {ride.destination}</p></div><Status value={ride.status} /></div>
       {finished ? <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-success"><Check className="size-4 shrink-0" />Corrida concluída. Obrigado por dirigir!</div> : <>
         {approvedCount > 0 && <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground"><Users className="size-3.5" />{approvedCount} passageira{approvedCount > 1 ? "s" : ""} confirmada{approvedCount > 1 ? "s" : ""} a bordo</p>}
-        <div className="mt-4 flex items-center gap-2"><span className="mr-auto text-sm font-bold">{ride.time} · {ride.seats} vagas</span><Button variant="outline" className="gap-1.5 rounded-full px-3 text-success hover:text-success" onClick={() => onFinish(ride.id)}><CheckCheck className="size-4" />Concluir</Button><Button variant="outline" size="icon" className="rounded-full" onClick={() => onEdit(ride.id)} aria-label="Editar carona"><Pencil /></Button><Button variant="destructive" size="icon" className="rounded-full" onClick={() => onCancel(ride.id)} aria-label="Cancelar carona"><X /></Button></div>
+        <div className="mt-4 flex items-center gap-2"><span className="mr-auto text-sm font-bold">{ride.time} · {ride.seats} vagas</span><Button className="gap-1.5 rounded-full bg-success px-3 text-white hover:bg-success/90" onClick={() => onFinish(ride.id)}><CheckCheck className="size-4" />Concluir viagem</Button><Button variant="outline" size="icon" className="rounded-full" onClick={() => onEdit(ride.id)} aria-label="Editar carona"><Pencil /></Button><Button variant="destructive" size="icon" className="rounded-full" onClick={() => onCancel(ride.id)} aria-label="Cancelar carona"><X /></Button></div>
       </>}
     </article>;
   })}</div></section></div>;
@@ -361,13 +359,20 @@ function DashboardView({ user, rides, requests, users, onReceipt, onSeeAll, onRe
 }
 
 function ProfileView({ user, theme, onTheme, onEdit, onWallet, onSwitch, onReset, onLogout, onDelete, onHelp }: { user: User; theme: "light" | "dark"; onTheme: (dark: boolean) => void; onEdit: () => void; onWallet: () => void; onSwitch: (id: "bruno" | "camila") => void; onReset: () => void; onLogout: () => void; onDelete: () => void; onHelp: () => void }) {
-  return <div className="space-y-4"><SectionTitle title="Meu perfil" description="Sua identidade na comunidade UniCarona." /><section className={`${glass} p-5 text-center`}><UserAvatar user={user} className="mx-auto size-24" /><h2 className="mt-4 text-xl font-extrabold">{user.name}</h2><p className="mt-1 text-sm text-muted-foreground">{user.course} · {user.university}</p><Badge className="mt-3 rounded-full bg-success-soft text-success"><ShieldCheck />Estudante verificado</Badge><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-muted/70 p-3"><b>{user.rating} ★</b><p className="text-xs text-muted-foreground">Avaliação</p></div><div className="rounded-2xl bg-muted/70 p-3"><b>{user.completedRides}</b><p className="text-xs text-muted-foreground">Caronas concluídas</p></div></div><Button variant="outline" className="mt-4 w-full rounded-full" onClick={onEdit}><Pencil />Editar perfil</Button></section>
+  return <div><SectionTitle title="Meu perfil" description="Sua identidade na comunidade UniCarona." /><div className="lg:grid lg:grid-cols-[22rem_1fr] lg:items-start lg:gap-6">
+    <section className={`${glass} p-5 text-center`}><UserAvatar user={user} className="mx-auto size-24" /><h2 className="mt-4 text-xl font-extrabold">{user.name}</h2><p className="mt-1 text-sm text-muted-foreground">{user.course} · {user.university}</p><Badge className="mt-3 rounded-full bg-success-soft text-success"><ShieldCheck />Estudante verificado</Badge><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-muted/70 p-3"><b>{user.rating} ★</b><p className="text-xs text-muted-foreground">Avaliação</p></div><div className="rounded-2xl bg-muted/70 p-3"><b>{user.completedRides}</b><p className="text-xs text-muted-foreground">Caronas concluídas</p></div></div><Button variant="outline" className="mt-4 w-full rounded-full" onClick={onEdit}><Pencil />Editar perfil</Button></section>
+    <div className="mt-4 space-y-4 lg:mt-0">
+    <div className="lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 space-y-4">
     <section className={`${glass} p-4`}><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-secondary text-primary"><Mail /></span><div className="min-w-0 flex-1"><b className="text-sm">E-mail acadêmico</b><p className="truncate text-xs text-muted-foreground">{user.email}</p></div></div></section>
     <section className={`${glass} p-4`}><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-secondary text-primary">{theme === "dark" ? <Moon /> : <Sun />}</span><div className="flex-1"><b className="text-sm">Aparência</b><p className="text-xs text-muted-foreground">{theme === "dark" ? "Tema escuro" : "Tema claro"}</p></div><Switch checked={theme === "dark"} onCheckedChange={onTheme} aria-label="Alternar tema escuro" /></div></section>
+    </div>
     <section className={`${glass} p-4`}><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-sky-soft text-sky"><WalletCards /></span><div className="min-w-0 flex-1"><b className="text-sm">Recebimentos PIX</b><p className="truncate text-xs text-muted-foreground">{user.walletConfigured && user.pixKey ? `${user.pixKey.type} · ${user.pixKey.value}` : "Configuração pendente"}</p></div><Button variant="ghost" size="icon" className="rounded-full" onClick={onWallet} aria-label="Configurar chave PIX"><ChevronRight /></Button></div></section>
+    <div className="lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 space-y-4">
     <section className={`${glass} p-4`}><div className="mb-4"><p className="text-xs font-bold uppercase text-primary">Visualização</p><h3 className="mt-1 font-bold">Escolha uma perspectiva</h3><p className="mt-1 text-xs text-muted-foreground">Alterne sua visão entre motorista e passageiro quando quiser.</p></div><div className="rounded-full bg-muted p-1"><div className="grid grid-cols-2 gap-1"><Button variant="ghost" className={`h-14 rounded-full text-xs ${user.id === "bruno" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`} onClick={() => onSwitch("bruno")}><Car />Motorista</Button><Button variant="ghost" className={`h-14 rounded-full text-xs ${user.id === "camila" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`} onClick={() => onSwitch("camila")}><UserRound />Passageiro</Button></div></div><Button variant="ghost" className="mt-3 w-full rounded-full text-xs text-muted-foreground" onClick={onReset}><RefreshCw />Restaurar dados da demonstração</Button></section>
     <section className={`${glass} space-y-2 p-3`}><Button variant="ghost" className="w-full justify-start rounded-2xl" onClick={onHelp}><CircleHelp />Central de ajuda</Button><Button variant="ghost" className="w-full justify-start rounded-2xl" onClick={onLogout}><LogOut />Sair da conta</Button><Button variant="ghost" className="w-full justify-start rounded-2xl text-destructive hover:text-destructive" onClick={onDelete}><Trash2 />Excluir conta</Button></section>
-  </div>;
+    </div>
+    </div>
+  </div></div>;
 }
 
 function EmptyState({ icon: Icon, title, text }: { icon: typeof Users; title: string; text: string }) { return <div className={`${glass} grid place-items-center px-6 py-12 text-center`}><span className="grid size-14 place-items-center rounded-3xl bg-muted text-muted-foreground"><Icon /></span><h3 className="mt-4 font-bold">{title}</h3><p className="mt-1 text-sm text-muted-foreground">{text}</p></div>; }
