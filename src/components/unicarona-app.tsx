@@ -238,7 +238,7 @@ export function UniCaronaApp() {
     {isDesktop ? <div className="flex min-h-screen w-full bg-app text-foreground">
       <DesktopSidebar menu={desktopMenu} view={view} setView={setView} current={current} isDriver={isDriver} onLogout={() => setConfirm("logout")} />
       <div className="flex min-h-screen flex-1 flex-col">
-        <DesktopTopbar view={view} unread={unread} onNotifications={openNotifications} />
+        <DesktopTopbar view={view} unread={unread} theme={state.theme} onTheme={(dark) => setState({ theme: dark ? "dark" : "light" })} onNotifications={openNotifications} />
         <main className="flex-1 overflow-y-auto px-10 py-8"><div className="mx-auto w-full max-w-5xl">{content}</div></main>
       </div>
     </div> : <div className="min-h-screen bg-app px-0 py-0 text-foreground sm:px-5 sm:py-6">
@@ -287,9 +287,9 @@ function DesktopSidebar({ menu, view, setView, current, isDriver, onLogout }: { 
   </aside>;
 }
 
-function DesktopTopbar({ view, unread, onNotifications }: { view: View; unread: number; onNotifications: () => void }) {
+function DesktopTopbar({ view, unread, theme, onTheme, onNotifications }: { view: View; unread: number; theme: "light" | "dark"; onTheme: (dark: boolean) => void; onNotifications: () => void }) {
   const info = desktopPageInfo[view];
-  return <header className="glass-header sticky top-0 z-30 flex items-center justify-between gap-4 px-10 py-5"><div><h1 className="text-xl font-extrabold tracking-normal">{info.title}</h1>{info.description && <p className="mt-1 text-sm text-muted-foreground">{info.description}</p>}</div><Button variant="ghost" size="icon" className="relative rounded-full" onClick={onNotifications} aria-label="Abrir notificações"><Bell />{unread > 0 && <span className="absolute right-1 top-1 size-2.5 rounded-full bg-destructive ring-2 ring-background" />}</Button></header>;
+  return <header className="glass-header sticky top-0 z-30 flex items-center justify-between gap-4 px-10 py-5"><div><h1 className="text-xl font-extrabold tracking-normal">{info.title}</h1>{info.description && <p className="mt-1 text-sm text-muted-foreground">{info.description}</p>}</div><div className="flex items-center gap-1"><Button variant="ghost" size="icon" className="rounded-full" onClick={() => onTheme(theme !== "dark")} aria-label={theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro"}>{theme === "dark" ? <Moon /> : <Sun />}</Button><Button variant="ghost" size="icon" className="relative rounded-full" onClick={onNotifications} aria-label="Abrir notificações"><Bell />{unread > 0 && <span className="absolute right-1 top-1 size-2.5 rounded-full bg-destructive ring-2 ring-background" />}</Button></div></header>;
 }
 
 function DesktopHomeView({ user, isDriver, rides, onOffer, onDashboard, onRide }: { user: User; isDriver: boolean; rides: Ride[]; onOffer: () => void; onDashboard: () => void; onRide: (id: string) => void }) {
