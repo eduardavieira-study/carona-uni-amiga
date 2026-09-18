@@ -236,14 +236,14 @@ export function UniCaronaApp() {
 
   return <TooltipProvider>
     {isDesktop ? <div className="flex min-h-screen w-full bg-app text-foreground">
-      <DesktopSidebar menu={desktopMenu} view={view} setView={setView} current={current} isDriver={isDriver} />
+      <DesktopSidebar menu={desktopMenu} view={view} setView={setView} current={current} isDriver={isDriver} onLogout={() => setConfirm("logout")} />
       <div className="flex min-h-screen flex-1 flex-col">
         <DesktopTopbar view={view} unread={unread} onNotifications={openNotifications} />
         <main className="flex-1 overflow-y-auto px-10 py-8"><div className="mx-auto w-full max-w-5xl">{content}</div></main>
       </div>
     </div> : <div className="min-h-screen bg-app px-0 py-0 text-foreground sm:px-5 sm:py-6">
     <div className="phone-shell mx-auto flex min-h-[100dvh] w-full max-w-md flex-col overflow-hidden bg-surface shadow-device sm:min-h-[calc(100dvh-3rem)] sm:rounded-[2.5rem] sm:border sm:border-white/30">
-      <header className="glass-header sticky top-0 z-30 flex items-center gap-3 px-5 pb-3 pt-4"><div className="min-w-0 flex-1"><p className="text-xs font-medium text-muted-foreground">Olá, {current.name.split(" ")[0]}!</p><h1 className="truncate text-lg font-extrabold tracking-normal">{isDriver ? "Pronto para dirigir?" : "Para onde vamos hoje?"}</h1></div><Button variant="ghost" size="icon" className="relative rounded-full" onClick={openNotifications} aria-label="Abrir notificações"><Bell />{unread > 0 && <span className="absolute right-1 top-1 size-2.5 rounded-full bg-destructive ring-2 ring-background" />}</Button><Button variant="ghost" size="icon" className="rounded-full text-muted-foreground" onClick={() => setConfirm("logout")} aria-label="Sair da conta"><LogOut /></Button><button type="button" onClick={() => setView("perfil")} aria-label="Ir para o perfil" className="rounded-full"><UserAvatar user={current} /></button>
+      <header className="glass-header sticky top-0 z-30 flex items-center gap-3 px-5 pb-3 pt-4"><div className="min-w-0 flex-1"><p className="text-xs font-medium text-muted-foreground">Olá, {current.name.split(" ")[0]}!</p><h1 className="truncate text-lg font-extrabold tracking-normal">{isDriver ? "Pronto para dirigir?" : "Para onde vamos hoje?"}</h1></div><Button variant="ghost" size="icon" className="relative rounded-full" onClick={openNotifications} aria-label="Abrir notificações"><Bell />{unread > 0 && <span className="absolute right-1 top-1 size-2.5 rounded-full bg-destructive ring-2 ring-background" />}</Button><button type="button" onClick={() => setView("perfil")} aria-label="Ir para o perfil" className="rounded-full"><UserAvatar user={current} /></button>
       </header>
       <main className="flex-1 overflow-y-auto px-4 pb-28 pt-4">{content}</main>
       <nav className="glass-dock fixed bottom-4 left-1/2 z-40 grid w-[calc(100%-2rem)] max-w-[25rem] -translate-x-1/2 grid-cols-5 rounded-full p-1.5 shadow-2xl">{menu.map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" onClick={() => setView(id)} className={`h-14 min-w-0 flex-col gap-1 rounded-full px-1 text-[10px] ${view === id ? "bg-primary-gradient text-primary-foreground shadow-primary hover:text-primary-foreground" : "text-muted-foreground"}`}><Icon className="size-5" /><span className="truncate">{label}</span></Button>)}</nav>
@@ -279,11 +279,11 @@ const desktopPageInfo: Record<View, { title: string; description: string }> = {
   perfil: { title: "Perfil", description: "Dados da conta, recebimentos PIX e visualização." },
 };
 
-function DesktopSidebar({ menu, view, setView, current, isDriver }: { menu: { id: View; label: string; icon: typeof Home }[]; view: View; setView: (view: View) => void; current: User; isDriver: boolean }) {
+function DesktopSidebar({ menu, view, setView, current, isDriver, onLogout }: { menu: { id: View; label: string; icon: typeof Home }[]; view: View; setView: (view: View) => void; current: User; isDriver: boolean; onLogout: () => void }) {
   return <aside className="glass-header sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-border/60 px-4 py-6">
     <div className="flex items-center gap-3 px-2"><span className="grid size-10 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-primary"><Car /></span><div><b className="block text-lg leading-tight">UniCarona</b><p className="text-xs text-muted-foreground">Mobilidade universitária</p></div></div>
     <nav className="mt-8 flex-1 space-y-1">{menu.map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" onClick={() => setView(id)} className={`h-11 w-full justify-start gap-3 rounded-2xl px-3 text-sm font-semibold ${view === id ? "bg-primary-gradient text-primary-foreground shadow-primary hover:text-primary-foreground" : "text-muted-foreground"}`}><Icon className="size-4" />{label}</Button>)}</nav>
-    <button type="button" onClick={() => setView("perfil")} className="flex items-center gap-3 rounded-2xl px-2 py-2 text-left transition hover:bg-muted/70"><UserAvatar user={current} className="size-10" /><div className="min-w-0 flex-1"><b className="block truncate text-sm">{current.name}</b><p className="truncate text-xs text-muted-foreground">{isDriver ? "Motorista" : "Passageira"}</p></div></button>
+    <div className="flex items-center gap-1 rounded-2xl px-1 py-1 transition hover:bg-muted/70"><button type="button" onClick={() => setView("perfil")} className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-1 py-1 text-left"><UserAvatar user={current} className="size-10" /><div className="min-w-0 flex-1"><b className="block truncate text-sm">{current.name}</b><p className="truncate text-xs text-muted-foreground">{isDriver ? "Motorista" : "Passageira"}</p></div></button><Button variant="ghost" size="icon" className="shrink-0 rounded-full text-muted-foreground" onClick={onLogout} aria-label="Sair da conta"><LogOut className="size-4" /></Button></div>
   </aside>;
 }
 
