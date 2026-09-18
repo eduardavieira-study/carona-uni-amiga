@@ -91,12 +91,12 @@
   --muted-foreground: #aaa4b7;
   --accent: #382d59;
   --accent-foreground: #f1eaff;
-  --destructive: #ff5773;
+  --destructive: #e0455f;
   --destructive-foreground: #ffffff;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.13);
   --ring: #a78bfa;
-  --success: #74e1ae;
+  --success: #35b477;
   --success-soft: rgba(53, 180, 119, 0.15);
   --warning: #ffc56a;
   --warning-soft: rgba(255, 179, 56, 0.14);
