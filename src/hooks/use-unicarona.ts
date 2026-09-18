@@ -8,7 +8,7 @@ export function useUniCarona() {
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved) setState(JSON.parse(saved) as UniCaronaState);
+      if (saved) setState({ ...initialState, ...(JSON.parse(saved) as Partial<UniCaronaState>) });
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
     }
