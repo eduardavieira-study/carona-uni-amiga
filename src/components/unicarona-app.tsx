@@ -70,9 +70,16 @@ function Status({ value }: { value: RideStatus | RequestStatus | "Confirmada" })
   return <Badge className={`${style} rounded-full border-0 px-3 py-1 text-[11px] shadow-none`}>{value}</Badge>;
 }
 
+const loginHighlights = [
+  { icon: ShieldCheck, text: "Estudantes com e-mail acadêmico verificado" },
+  { icon: WalletCards, text: "Pagamento simples e rápido via PIX" },
+  { icon: Star, text: "Avaliações trocadas após cada viagem" },
+];
+
 function Login({ onLogin, onSignup }: { onLogin: (email: string, password: string) => boolean; onSignup: (user: User) => void }) {
   const [signup, setSignup] = useState(false);
   const [email, setEmail] = useState("bruno.andrade@pucminas.br");
+  const [confirmEmail, setConfirmEmail] = useState("");
   const [password, setPassword] = useState("unicarona123");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -81,12 +88,14 @@ function Login({ onLogin, onSignup }: { onLogin: (email: string, password: strin
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const validEmail = academicEmail(email);
+  const emailsMatch = email.trim().toLowerCase() === confirmEmail.trim().toLowerCase();
   const strength = password.length >= 12 ? 3 : password.length >= 8 ? 2 : password.length ? 1 : 0;
-  const canSubmit = validEmail && password.length > 0 && (!signup || (name.trim().length > 0 && phone.length >= 15 && password.length >= 8));
+  const canSubmit = validEmail && password.length > 0 && (!signup || (name.trim().length > 0 && phone.length >= 15 && password.length >= 8 && emailsMatch));
   const upload = (event: ChangeEvent<HTMLInputElement>) => { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => setPhoto(typeof reader.result === "string" ? reader.result : undefined); reader.readAsDataURL(file); };
   const submit = (event: FormEvent) => {
     event.preventDefault(); setError("");
     if (!validEmail) { setError("Use seu e-mail institucional da universidade para continuar."); toast.error("Confira o e-mail acadêmico informado."); return; }
+    if (signup && !emailsMatch) { setError("Os e-mails informados não coincidem."); toast.error("Confirme seu e-mail acadêmico corretamente."); return; }
     if (signup && (!name.trim() || phone.length < 15 || password.length < 8)) { setError("Preencha seu nome, telefone completo e uma senha com pelo menos 8 caracteres."); toast.error("Alguns dados obrigatórios precisam de atenção."); return; }
     setBusy(true);
     window.setTimeout(() => {
@@ -95,20 +104,36 @@ function Login({ onLogin, onSignup }: { onLogin: (email: string, password: strin
       setBusy(false);
     }, 550);
   };
-  return <main className="min-h-screen bg-app px-4 py-8 text-foreground sm:grid sm:place-items-center">
-    <section className="glass-card mx-auto w-full max-w-md rounded-[2rem] p-6 shadow-device sm:p-8">
-      <div className="mb-8 flex items-center justify-between"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-primary"><Car /></span><div><b className="text-xl">UniCarona</b><p className="text-xs text-muted-foreground">Mobilidade universitária</p></div></div></div>
-      <div className="mb-7"><p className="text-sm font-bold text-primary">{signup ? "Sua jornada começa aqui" : "Que bom ter você de volta"}</p><h1 className="mt-2 text-3xl font-extrabold tracking-normal">{signup ? "Crie sua conta" : "Entre na UniCarona"}</h1><p className="mt-2 text-sm text-muted-foreground">Faça parte do UniCarona para encontrar e compartilhar caronas com estudantes em Belo Horizonte.</p></div>
-      <form onSubmit={submit} className="space-y-5">
-        {signup && <><div className="flex justify-center"><label className="group relative cursor-pointer"><Avatar className="size-24 border-4 border-background shadow-lg"><AvatarImage src={photo} alt="Prévia da foto de perfil" /><AvatarFallback className="bg-secondary text-xl font-bold text-primary">{name ? initials(name) : <UserRound />}</AvatarFallback></Avatar><span className="absolute bottom-0 right-0 grid size-8 place-items-center rounded-full bg-primary text-primary-foreground shadow-md"><Camera className="size-4" /></span><input className="sr-only" type="file" accept="image/*" onChange={upload} /><span className="sr-only">Selecionar foto de perfil</span></label></div><Field label="Nome completo"><Input className={fieldClass} value={name} onChange={(event) => setName(event.target.value)} placeholder="Como aparece na universidade" /></Field><Field label="Universidade"><Select value={university} onValueChange={setUniversity}><SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger><SelectContent>{universityOptions.map((option) => <SelectItem value={option} key={option}>{option}</SelectItem>)}</SelectContent></Select></Field><Field label="Telefone"><Input className={fieldClass} value={phone} onChange={(event) => setPhone(maskPhone(event.target.value))} placeholder="(31) 99999-9999" /></Field></>}
-        <Field label="E-mail acadêmico" valid={validEmail} error={email && !validEmail ? "Informe um e-mail institucional, como nome@ufmg.br." : undefined}><Input className={fieldClass} type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="seu.nome@universidade.edu.br" /></Field>
-        <Field label="Senha"><PasswordInput value={password} onChange={setPassword} placeholder="Mínimo de 8 caracteres" />{signup && <div className="flex items-center gap-2 px-2"><div className="grid flex-1 grid-cols-3 gap-1">{[1, 2, 3].map((step) => <span key={step} className={`h-1.5 rounded-full ${strength >= step ? step === 1 ? "bg-destructive" : step === 2 ? "bg-warning" : "bg-success" : "bg-muted"}`} />)}</div><span className="text-[11px] text-muted-foreground">{strength === 3 ? "Forte" : strength === 2 ? "Boa" : "Fraca"}</span></div>}</Field>
-        {error && <div className="rounded-2xl bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
-        <Button className="h-12 w-full rounded-full bg-primary-gradient font-bold shadow-primary" disabled={busy || !canSubmit}>{busy ? <LoaderCircle className="animate-spin" /> : signup ? "Criar minha conta" : "Entrar"}</Button>
-      </form>
-      <Button variant="ghost" className="mt-4 w-full rounded-full text-primary py-2" onClick={() => { setSignup((current) => !current); setError(""); }}>{signup ? "Já tenho uma conta" : "Criar uma conta acadêmica"}</Button>
-      {!signup && <p className="mt-4 rounded-2xl bg-muted/70 p-3 text-center text-xs text-muted-foreground">Para a demonstração, use Bruno ou Camila com a senha <b>unicarona123</b>.</p>}
-    </section>
+  return <main className="min-h-screen bg-app text-foreground lg:flex">
+    <div className="hidden bg-primary-gradient text-primary-foreground lg:flex lg:w-1/2 lg:shrink-0 lg:flex-col lg:justify-between lg:p-12 xl:p-16">
+      <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-white/15"><Car /></span><div><b className="text-xl">UniCarona</b><p className="text-sm text-primary-foreground/70">Mobilidade universitária</p></div></div>
+      <div className="max-w-md">
+        <h2 className="text-4xl font-extrabold leading-tight tracking-normal">Caronas seguras entre estudantes de BH.</h2>
+        <p className="mt-4 text-primary-foreground/80">Conecte-se com colegas verificados, compartilhe trajetos e economize no seu dia a dia universitário.</p>
+        <div className="mt-10 space-y-4">{loginHighlights.map(({ icon: Icon, text }) => <div key={text} className="flex items-center gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white/15"><Icon className="size-4" /></span><span className="text-sm">{text}</span></div>)}</div>
+      </div>
+      <p className="text-xs text-primary-foreground/60">Feito para a comunidade universitária de Belo Horizonte.</p>
+    </div>
+    <div className="px-4 py-8 sm:grid sm:place-items-center lg:flex lg:w-1/2 lg:items-center lg:justify-center lg:px-12 lg:py-12">
+      <section className={`glass-card mx-auto w-full rounded-[2rem] p-6 shadow-device sm:p-8 lg:max-w-md lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none ${signup ? "max-w-md lg:max-w-lg" : "max-w-md"}`}>
+        <div className="mb-8 flex items-center justify-between lg:hidden"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-primary"><Car /></span><div><b className="text-xl">UniCarona</b><p className="text-xs text-muted-foreground">Mobilidade universitária</p></div></div></div>
+        <div className="mb-7"><p className="text-sm font-bold text-primary">{signup ? "Sua jornada começa aqui" : "Que bom ter você de volta"}</p><h1 className="mt-2 text-3xl font-extrabold tracking-normal">{signup ? "Crie sua conta" : "Entre na UniCarona"}</h1><p className="mt-2 text-sm text-muted-foreground">Faça parte do UniCarona para encontrar e compartilhar caronas com estudantes em Belo Horizonte.</p></div>
+        <form onSubmit={submit} className="space-y-5">
+          {signup && <div className="flex justify-center"><label className="group relative cursor-pointer"><Avatar className="size-24 border-4 border-background shadow-lg"><AvatarImage src={photo} alt="Prévia da foto de perfil" /><AvatarFallback className="bg-secondary text-xl font-bold text-primary">{name ? initials(name) : <UserRound />}</AvatarFallback></Avatar><span className="absolute bottom-0 right-0 grid size-8 place-items-center rounded-full bg-primary text-primary-foreground shadow-md"><Camera className="size-4" /></span><input className="sr-only" type="file" accept="image/*" onChange={upload} /><span className="sr-only">Selecionar foto de perfil</span></label></div>}
+          {signup && <div className="grid gap-5 lg:grid-cols-2 lg:gap-x-4"><Field label="Nome completo"><Input className={fieldClass} value={name} onChange={(event) => setName(event.target.value)} placeholder="Seu nome completo" /></Field><Field label="Telefone"><Input className={fieldClass} value={phone} onChange={(event) => setPhone(maskPhone(event.target.value))} placeholder="(31) 99999-9999" /></Field></div>}
+          {signup && <Field label="Universidade"><Select value={university} onValueChange={setUniversity}><SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger><SelectContent>{universityOptions.map((option) => <SelectItem value={option} key={option}>{option}</SelectItem>)}</SelectContent></Select></Field>}
+          <div className={signup ? "grid gap-5 lg:grid-cols-2 lg:gap-x-4" : ""}>
+            <Field label="E-mail acadêmico" valid={validEmail} error={email && !validEmail ? "Informe um e-mail institucional, como nome@ufmg.br." : undefined}><Input className={fieldClass} type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="seu.nome@universidade.edu.br" /></Field>
+            {signup && <Field label="Confirmar e-mail acadêmico" valid={confirmEmail.length > 0 && emailsMatch} error={confirmEmail && !emailsMatch ? "Os e-mails não coincidem." : undefined}><Input className={fieldClass} type="email" value={confirmEmail} onChange={(event) => setConfirmEmail(event.target.value)} placeholder="Repita seu e-mail acadêmico" /></Field>}
+          </div>
+          <Field label="Senha"><PasswordInput value={password} onChange={setPassword} placeholder="Mínimo de 8 caracteres" />{signup && <div className="flex items-center gap-2 px-2"><div className="grid flex-1 grid-cols-3 gap-1">{[1, 2, 3].map((step) => <span key={step} className={`h-1.5 rounded-full ${strength >= step ? step === 1 ? "bg-destructive" : step === 2 ? "bg-warning" : "bg-success" : "bg-muted"}`} />)}</div><span className="text-[11px] text-muted-foreground">{strength === 3 ? "Forte" : strength === 2 ? "Boa" : "Fraca"}</span></div>}</Field>
+          {error && <div className="rounded-2xl bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+          <Button className="h-12 w-full rounded-full bg-primary-gradient font-bold shadow-primary" disabled={busy || !canSubmit}>{busy ? <LoaderCircle className="animate-spin" /> : signup ? "Criar minha conta" : "Entrar"}</Button>
+        </form>
+        <Button variant="ghost" className="mt-4 w-full rounded-full text-primary py-2" onClick={() => { setSignup((current) => !current); setError(""); setConfirmEmail(""); }}>{signup ? "Já tenho uma conta" : "Criar uma conta acadêmica"}</Button>
+        {!signup && <p className="mt-4 rounded-2xl bg-muted/70 p-3 text-center text-xs text-muted-foreground">Para a demonstração, use Bruno ou Camila com a senha <b>unicarona123</b>.</p>}
+      </section>
+    </div>
   </main>;
 }
 
@@ -218,7 +243,7 @@ export function UniCaronaApp() {
       </div>
     </div> : <div className="min-h-screen bg-app px-0 py-0 text-foreground sm:px-5 sm:py-6">
     <div className="phone-shell mx-auto flex min-h-[100dvh] w-full max-w-md flex-col overflow-hidden bg-surface shadow-device sm:min-h-[calc(100dvh-3rem)] sm:rounded-[2.5rem] sm:border sm:border-white/30">
-      <header className="glass-header sticky top-0 z-30 flex items-center gap-3 px-5 pb-3 pt-4"><div className="min-w-0 flex-1"><p className="text-xs font-medium text-muted-foreground">Olá, {current.name.split(" ")[0]}!</p><h1 className="truncate text-lg font-extrabold tracking-normal">{isDriver ? "Pronto para dirigir?" : "Para onde vamos hoje?"}</h1></div><Button variant="ghost" size="icon" className="relative rounded-full" onClick={openNotifications} aria-label="Abrir notificações"><Bell />{unread > 0 && <span className="absolute right-1 top-1 size-2.5 rounded-full bg-destructive ring-2 ring-background" />}</Button><button type="button" onClick={() => setView("perfil")} aria-label="Ir para o perfil" className="rounded-full"><UserAvatar user={current} /></button>
+      <header className="glass-header sticky top-0 z-30 flex items-center gap-3 px-5 pb-3 pt-4"><div className="min-w-0 flex-1"><p className="text-xs font-medium text-muted-foreground">Olá, {current.name.split(" ")[0]}!</p><h1 className="truncate text-lg font-extrabold tracking-normal">{isDriver ? "Pronto para dirigir?" : "Para onde vamos hoje?"}</h1></div><Button variant="ghost" size="icon" className="relative rounded-full" onClick={openNotifications} aria-label="Abrir notificações"><Bell />{unread > 0 && <span className="absolute right-1 top-1 size-2.5 rounded-full bg-destructive ring-2 ring-background" />}</Button><Button variant="ghost" size="icon" className="rounded-full text-muted-foreground" onClick={() => setConfirm("logout")} aria-label="Sair da conta"><LogOut /></Button><button type="button" onClick={() => setView("perfil")} aria-label="Ir para o perfil" className="rounded-full"><UserAvatar user={current} /></button>
       </header>
       <main className="flex-1 overflow-y-auto px-4 pb-28 pt-4">{content}</main>
       <nav className="glass-dock fixed bottom-4 left-1/2 z-40 grid w-[calc(100%-2rem)] max-w-[25rem] -translate-x-1/2 grid-cols-5 rounded-full p-1.5 shadow-2xl">{menu.map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" onClick={() => setView(id)} className={`h-14 min-w-0 flex-col gap-1 rounded-full px-1 text-[10px] ${view === id ? "bg-primary-gradient text-primary-foreground shadow-primary hover:text-primary-foreground" : "text-muted-foreground"}`}><Icon className="size-5" /><span className="truncate">{label}</span></Button>)}</nav>
@@ -241,7 +266,7 @@ export function UniCaronaApp() {
 }
 
 function SectionTitle({ title, description, action }: { title: string; description?: string; action?: ReactNode }) { return <div className="mb-4 flex items-end justify-between gap-3"><div><h2 className="text-xl font-extrabold tracking-normal">{title}</h2>{description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}</div>{action}</div>; }
-function Metric({ icon: Icon, value, label, tint = "primary" }: { icon: typeof Car; value: string; label: string; tint?: "primary" | "blue" | "lime" }) { const color = tint === "blue" ? "bg-sky-soft text-sky" : tint === "lime" ? "bg-live text-live-foreground" : "bg-primary/12 text-primary"; return <div className={`${glass} p-4`}><span className={`grid size-9 place-items-center rounded-2xl ${color}`}><Icon className="size-4" /></span><b className="mt-5 block text-xl">{value}</b><span className="mt-1 block text-xs leading-tight text-muted-foreground">{label}</span></div>; }
+function Metric({ icon: Icon, value, label, tint = "primary" }: { icon: typeof Car; value: string; label: string; tint?: "primary" | "blue" | "lime" }) { const color = tint === "blue" ? "bg-sky-soft text-sky" : tint === "lime" ? "bg-live text-live-foreground" : "bg-primary/12 text-primary"; return <div className={`${glass} p-4 lg:flex lg:flex-col lg:items-center lg:text-center`}><span className={`grid size-9 place-items-center rounded-2xl ${color}`}><Icon className="size-4" /></span><b className="mt-5 block text-xl">{value}</b><span className="mt-1 block text-xs leading-tight text-muted-foreground">{label}</span></div>; }
 
 const desktopPageInfo: Record<View, { title: string; description: string }> = {
   inicio: { title: "Início", description: "Um resumo rápido da sua conta." },
