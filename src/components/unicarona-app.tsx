@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle, ArrowDownToLine, BarChart3, Bell, CalendarDays, Camera, Car, Check, CheckCheck,
   ChevronRight, CircleDollarSign, CircleHelp, Clock3, Copy, Download, Eye, EyeOff, GraduationCap,
@@ -106,7 +107,7 @@ function Login({ onLogin, onSignup }: { onLogin: (email: string, password: strin
   };
   return <main className="min-h-screen bg-app text-foreground lg:flex">
     <div className="hidden bg-primary-gradient text-primary-foreground lg:flex lg:w-1/2 lg:shrink-0 lg:flex-col lg:justify-between lg:p-12 xl:p-16">
-      <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-white/15"><Car /></span><div><b className="text-xl">UniCarona</b><p className="text-sm text-primary-foreground/70">Mobilidade universitária</p></div></div>
+      <Link to="/" className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-white/15"><Car /></span><div><b className="text-xl">UniCarona</b><p className="text-sm text-primary-foreground/70">Mobilidade universitária</p></div></Link>
       <div className="max-w-md">
         <h2 className="text-4xl font-extrabold leading-tight tracking-normal">Caronas seguras entre estudantes de BH.</h2>
         <p className="mt-4 text-primary-foreground/80">Conecte-se com colegas verificados, compartilhe trajetos e economize no seu dia a dia universitário.</p>
@@ -116,7 +117,7 @@ function Login({ onLogin, onSignup }: { onLogin: (email: string, password: strin
     </div>
     <div className="px-4 py-8 sm:grid sm:place-items-center lg:flex lg:w-1/2 lg:items-center lg:justify-center lg:px-12 lg:py-12">
       <section className={`glass-card mx-auto w-full rounded-[2rem] p-6 shadow-device sm:p-8 lg:max-w-md lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none ${signup ? "max-w-md lg:max-w-lg" : "max-w-md"}`}>
-        <div className="mb-8 flex items-center justify-between lg:hidden"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-primary"><Car /></span><div><b className="text-xl">UniCarona</b><p className="text-xs text-muted-foreground">Mobilidade universitária</p></div></div></div>
+        <div className="mb-8 flex items-center justify-between lg:hidden"><Link to="/" className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-primary"><Car /></span><div><b className="text-xl">UniCarona</b><p className="text-xs text-muted-foreground">Mobilidade universitária</p></div></Link></div>
         <div className="mb-7"><p className="text-sm font-bold text-primary">{signup ? "Sua jornada começa aqui" : "Que bom ter você de volta"}</p><h1 className="mt-2 text-3xl font-extrabold tracking-normal">{signup ? "Crie sua conta" : "Entre na UniCarona"}</h1><p className="mt-2 text-sm text-muted-foreground">Faça parte do UniCarona para encontrar e compartilhar caronas com estudantes em Belo Horizonte.</p></div>
         <form onSubmit={submit} className="space-y-5">
           {signup && <div className="flex justify-center"><label className="group relative cursor-pointer"><Avatar className="size-24 border-4 border-background shadow-lg"><AvatarImage src={photo} alt="Prévia da foto de perfil" /><AvatarFallback className="bg-secondary text-xl font-bold text-primary">{name ? initials(name) : <UserRound />}</AvatarFallback></Avatar><span className="absolute bottom-0 right-0 grid size-8 place-items-center rounded-full bg-primary text-primary-foreground shadow-md"><Camera className="size-4" /></span><input className="sr-only" type="file" accept="image/*" onChange={upload} /><span className="sr-only">Selecionar foto de perfil</span></label></div>}

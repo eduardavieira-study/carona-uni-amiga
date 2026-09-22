@@ -110,7 +110,7 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { background: var(--background); }
+  html { background: var(--background); scroll-behavior: smooth; }
   body { min-width: 320px; background: var(--background); color: var(--foreground); font-family: var(--font-sans); letter-spacing: 0; }
   button, input, textarea, select { letter-spacing: 0; }
 }
@@ -148,7 +148,14 @@
 @utility bg-primary-gradient { background-image: linear-gradient(135deg, #7c3aed, #5b4be8); }
 @utility shadow-primary { box-shadow: 0 14px 34px color-mix(in srgb, var(--primary) 28%, transparent); }
 @utility shadow-device { box-shadow: 0 30px 90px color-mix(in srgb, #17131f 30%, transparent); }
-@utility hero-card { background-image: linear-gradient(135deg, #7c3aed 0%, #5b4be8 58%, #3f51b5 100%); }
+@utility hero-card {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, #7c3aed 0%, #5b4be8 58%, #3f51b5 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: 140px 140px, cover;
+  background-blend-mode: overlay, normal;
+}
 @utility bg-map { background-color: color-mix(in srgb, var(--secondary) 46%, var(--background)); background-image: radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--sky-soft) 60%, transparent), transparent 32%); }
 @utility route-glow { filter: drop-shadow(0 0 7px color-mix(in srgb, var(--primary) 80%, transparent)); }
 @utility bar-fill { background-image: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 45%, var(--sky))); box-shadow: 0 6px 18px color-mix(in srgb, var(--primary) 22%, transparent); }
@@ -161,6 +168,25 @@
 .gauge { background: conic-gradient(var(--primary) 0 78%, var(--muted) 78% 100%); box-shadow: 0 14px 40px color-mix(in srgb, var(--primary) 16%, transparent); }
 .car-marker { transition: transform 500ms ease; }
 .phone-shell { isolation: isolate; }
+
+input[type="date"],
+input[type="time"] { position: relative; color-scheme: light; }
+.dark input[type="date"],
+.dark input[type="time"] { color-scheme: dark; }
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  margin: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 150ms ease;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
