@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LiveMap } from "@/components/live-map";
 import { STORAGE_KEY, type UniCaronaState } from "@/lib/unicarona-data";
 
 const glass = "glass-card rounded-3xl";
@@ -290,7 +291,9 @@ export function LandingPage() {
               <div className="flex items-center gap-2 text-sm font-bold">
                 <MapPin className="size-4 text-primary" /> Acompanhamento ao vivo
               </div>
-              <div className="bg-map mt-4 h-40 rounded-2xl" />
+              <div className="bg-map mt-4 rounded-2xl">
+                <LiveMap />
+              </div>
               <div className="mt-4 flex items-center justify-between rounded-2xl bg-background/60 px-4 py-3 text-xs font-semibold">
                 <span className="flex items-center gap-1.5"><Check className="size-3.5 text-success" /> Motorista a caminho</span>
                 <span className="text-muted-foreground">Faltam 8 min</span>

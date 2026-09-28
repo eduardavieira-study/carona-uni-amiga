@@ -4,10 +4,17 @@ export type RideStatus = "Pendente" | "Aprovada" | "Em andamento" | "Concluída"
 export type PixKeyType = "CPF" | "E-mail" | "Telefone" | "Aleatória";
 export type PixKey = { type: PixKeyType; value: string; bank: string };
 
+export type WalletStatus = "nao_criada" | "documentos_pendentes" | "em_analise" | "verificada" | "rejeitada";
+export type WalletDocuments = { documento: boolean; selfie: boolean };
+export type Wallet = {
+  status: WalletStatus; cpf: string; birthDate: string; pixKey?: PixKey; asaasAccountId?: string;
+  documents: WalletDocuments; submittedAt?: string; rejectionReason?: string;
+};
+
 export type User = {
   id: string; name: string; email: string; password: string; university: string; phone: string;
   bio: string; course: string; avatar: string; photo?: string; rating: number; completedRides: number;
-  type: "motorista" | "passageira"; walletConfigured: boolean; pixKey?: PixKey;
+  type: "motorista" | "passageira"; wallet?: Wallet;
   vehicle?: { model: string; plate: string; color: string };
 };
 
@@ -43,31 +50,31 @@ export const defaultUsers: User[] = [
     id: "bruno", name: "Bruno Andrade", email: "bruno.andrade@pucminas.br", password: "unicarona123",
     university: "PUC Minas Coração Eucarístico", phone: "(31) 98841-2207", course: "Engenharia de Software",
     bio: "Vou ao campus todos os dias e gosto de tornar o caminho mais leve e sustentável.",
-    avatar: "BA", rating: 4.9, completedRides: 87, type: "motorista", walletConfigured: false,
+    avatar: "BA", rating: 4.9, completedRides: 87, type: "motorista",
     vehicle: { model: "Chevrolet Onix 2022", plate: "RNU4E19", color: "Branco" },
   },
   {
     id: "camila", name: "Camila Ribeiro", email: "camila.ribeiro@ufmg.br", password: "unicarona123",
     university: "UFMG Pampulha", phone: "(31) 99732-1460", course: "Arquitetura e Urbanismo",
     bio: "Estudante, ciclista de fim de semana e fã de mobilidade compartilhada.",
-    avatar: "CR", rating: 4.8, completedRides: 31, type: "passageira", walletConfigured: true,
-    pixKey: { type: "E-mail", value: "camila.ribeiro@ufmg.br", bank: "Nubank" },
+    avatar: "CR", rating: 4.8, completedRides: 31, type: "passageira",
+    wallet: { status: "verificada", cpf: "045.812.339-07", birthDate: "2002-03-18", asaasAccountId: "asaas_c4m1l4r1b31r0", documents: { documento: true, selfie: true }, submittedAt: "10 jan", pixKey: { type: "E-mail", value: "camila.ribeiro@ufmg.br", bank: "Nubank" } },
   },
   {
     id: "lucas", name: "Lucas Fernandes", email: "lucas@cefetmg.br", password: "demo1234",
     university: "CEFET-MG Nova Suíça", phone: "(31) 99220-5813", course: "Engenharia Mecânica",
     bio: "Trajetos tranquilos e pontuais.", avatar: "LF", rating: 4.7, completedRides: 54,
-    type: "motorista", walletConfigured: true,
+    type: "motorista",
     vehicle: { model: "Honda Fit 2020", plate: "QXZ8B42", color: "Prata" },
-    pixKey: { type: "Telefone", value: "(31) 99220-5813", bank: "Banco Inter" },
+    wallet: { status: "verificada", cpf: "398.271.640-55", birthDate: "1999-07-02", asaasAccountId: "asaas_luc4sf3rn4nd3s", documents: { documento: true, selfie: true }, submittedAt: "22 fev", pixKey: { type: "Telefone", value: "(31) 99220-5813", bank: "Banco Inter" } },
   },
   {
     id: "marina", name: "Marina Costa", email: "marina@ufmg.br", password: "demo1234",
     university: "UFMG Pampulha", phone: "(31) 99114-7730", course: "Ciências Biológicas",
     bio: "Sempre com música boa e respeito aos horários.", avatar: "MC", rating: 5, completedRides: 112,
-    type: "motorista", walletConfigured: true,
+    type: "motorista",
     vehicle: { model: "Hyundai HB20 2023", plate: "RTO2A65", color: "Cinza" },
-    pixKey: { type: "CPF", value: "123.456.789-00", bank: "Banco do Brasil" },
+    wallet: { status: "verificada", cpf: "123.456.789-00", birthDate: "2000-11-25", asaasAccountId: "asaas_m4r1n4c0st4", documents: { documento: true, selfie: true }, submittedAt: "3 mar", pixKey: { type: "CPF", value: "123.456.789-00", bank: "Banco do Brasil" } },
   },
 ];
 

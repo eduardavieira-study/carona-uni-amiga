@@ -167,6 +167,9 @@
 .route-line > div:last-child::before { background: var(--success); box-shadow: 0 0 0 4px var(--success-soft); }
 .gauge { background: conic-gradient(var(--primary) 0 78%, var(--muted) 78% 100%); box-shadow: 0 14px 40px color-mix(in srgb, var(--primary) 16%, transparent); }
 .car-marker { transition: transform 500ms ease; }
+
+.leaflet-control-attribution { background: color-mix(in srgb, var(--surface) 80%, transparent) !important; color: var(--muted-foreground) !important; font-size: 9px !important; padding: 0 4px !important; }
+.leaflet-control-attribution a { color: var(--muted-foreground) !important; }
 .phone-shell { isolation: isolate; }
 
 input[type="date"],
